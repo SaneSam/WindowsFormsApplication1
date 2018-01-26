@@ -1,0 +1,51 @@
+<VSTemplate Version="3.0.0" xmlns="http://schemas.microsoft.com/developer/vstemplate/2005" Type="Project">
+  <TemplateData>
+    <Name>WindowsFormsApplication1</Name>
+    <Description>&lt;No description available&gt;</Description>
+    <ProjectType>CSharp</ProjectType>
+    <ProjectSubType>
+    </ProjectSubType>
+    <SortOrder>1000</SortOrder>
+    <CreateNewFolder>true</CreateNewFolder>
+    <DefaultName>WindowsFormsApplication1</DefaultName>
+    <ProvideDefaultName>true</ProvideDefaultName>
+    <LocationField>Enabled</LocationField>
+    <EnableLocationBrowseButton>true</EnableLocationBrowseButton>
+    <Icon>__TemplateIcon.ico</Icon>
+  </TemplateData>
+  <TemplateContent>
+    <Project TargetFileName="WindowsFormsApplication1.csproj" File="WindowsFormsApplication1.csproj" ReplaceParameters="true">
+      <ProjectItem ReplaceParameters="true" TargetFileName="App.config">App.config</ProjectItem>
+      <ProjectItem ReplaceParameters="true" TargetFileName="ClassDiagram1.cd">ClassDiagram1.cd</ProjectItem>
+      <ProjectItem ReplaceParameters="true" TargetFileName="ClassDiagram2.cd">ClassDiagram2.cd</ProjectItem>
+      <ProjectItem ReplaceParameters="false" TargetFileName="Enchanted Land.otf">Enchanted Land.otf</ProjectItem>
+      <ProjectItem ReplaceParameters="true" TargetFileName="Healing.cs">Healing.cs</ProjectItem>
+      <ProjectItem ReplaceParameters="true" TargetFileName="Inventory.cs">Inventory.cs</ProjectItem>
+      <ProjectItem ReplaceParameters="true" TargetFileName="Item.cs">Item.cs</ProjectItem>
+      <ProjectItem ReplaceParameters="true" TargetFileName="LivingCreature.cs">LivingCreature.cs</ProjectItem>
+      <ProjectItem ReplaceParameters="true" TargetFileName="Location.cs">Location.cs</ProjectItem>
+      <ProjectItem ReplaceParameters="true" TargetFileName="LootItem.cs">LootItem.cs</ProjectItem>
+      <ProjectItem ReplaceParameters="true" TargetFileName="MessageEventArgs.cs">MessageEventArgs.cs</ProjectItem>
+      <ProjectItem ReplaceParameters="true" TargetFileName="Monster.cs">Monster.cs</ProjectItem>
+      <ProjectItem ReplaceParameters="true" TargetFileName="PlayerDataMapper.cs">PlayerDataMapper.cs</ProjectItem>
+      <ProjectItem ReplaceParameters="true" TargetFileName="PlayerQuest.cs">PlayerQuest.cs</ProjectItem>
+      <ProjectItem ReplaceParameters="true" TargetFileName="Program.cs">Program.cs</ProjectItem>
+      <Folder Name="Properties" TargetFolderName="Properties">
+        <ProjectItem ReplaceParameters="true" TargetFileName="AssemblyInfo.cs">AssemblyInfo.cs</ProjectItem>
+        <ProjectItem ReplaceParameters="true" TargetFileName="Resources.resx">Resources.resx</ProjectItem>
+        <ProjectItem ReplaceParameters="true" TargetFileName="Resources.Designer.cs">Resources.Designer.cs</ProjectItem>
+        <ProjectItem ReplaceParameters="true" TargetFileName="Settings.settings">Settings.settings</ProjectItem>
+        <ProjectItem ReplaceParameters="true" TargetFileName="Settings.Designer.cs">Settings.Designer.cs</ProjectItem>
+      </Folder>
+      <ProjectItem ReplaceParameters="true" TargetFileName="Quest.cs">Quest.cs</ProjectItem>
+      <ProjectItem ReplaceParameters="true" TargetFileName="QuestCompletedItem.cs">QuestCompletedItem.cs</ProjectItem>
+      <ProjectItem ReplaceParameters="true" TargetFileName="RandomNumberGen.cs">RandomNumberGen.cs</ProjectItem>
+      <ProjectItem ReplaceParameters="true" TargetFileName="TradingScreen.cs">TradingScreen.cs</ProjectItem>
+      <ProjectItem ReplaceParameters="true" TargetFileName="TradingScreen.Designer.cs">TradingScreen.Designer.cs</ProjectItem>
+      <ProjectItem ReplaceParameters="true" TargetFileName="TradingScreen.resx">TradingScreen.resx</ProjectItem>
+      <ProjectItem ReplaceParameters="true" TargetFileName="Vendortron9000.cs">Vendortron9000.cs</ProjectItem>
+      <ProjectItem ReplaceParameters="true" TargetFileName="Weapon.cs">Weapon.cs</ProjectItem>
+      <ProjectItem ReplaceParameters="true" TargetFileName="World.cs">World.cs</ProjectItem>
+    </Project>
+  </TemplateContent>
+</VSTemplate>

@@ -1,0 +1,11 @@
+Z:\P Drive\WindowsFormsApplication1\bin\Debug\$safeprojectname$.exe.config
+Z:\P Drive\WindowsFormsApplication1\bin\Debug\$safeprojectname$.exe
+Z:\P Drive\WindowsFormsApplication1\bin\Debug\$safeprojectname$.pdb
+Z:\P Drive\WindowsFormsApplication1\obj\Debug\WindowsFormsApplication1.csprojResolveAssemblyReference.cache
+Z:\P Drive\WindowsFormsApplication1\obj\Debug\$safeprojectname$.Properties.Resources.resources
+Z:\P Drive\WindowsFormsApplication1\obj\Debug\Engine.TradingScreen.resources
+Z:\P Drive\WindowsFormsApplication1\obj\Debug\WindowsFormsApplication1.csproj.GenerateResource.Cache
+Z:\P Drive\WindowsFormsApplication1\obj\Debug\$safeprojectname$.exe
+Z:\P Drive\WindowsFormsApplication1\obj\Debug\$safeprojectname$.pdb
+Z:\P Drive\WindowsFormsApplication1\obj\Debug\Engine.Game.resources
+Z:\P Drive\WindowsFormsApplication1\obj\Debug\Engine.LEVEL_UP.resources
