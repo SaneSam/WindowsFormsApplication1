@@ -48,8 +48,6 @@
             this.label4 = new System.Windows.Forms.Label();
             this.IntelligenceBar = new System.Windows.Forms.ProgressBar();
             this.label5 = new System.Windows.Forms.Label();
-            this.CharismaBar = new System.Windows.Forms.ProgressBar();
-            this.label6 = new System.Windows.Forms.Label();
             this.HealthBar = new System.Windows.Forms.ProgressBar();
             this.label7 = new System.Windows.Forms.Label();
             this.StaminaBar = new System.Windows.Forms.ProgressBar();
@@ -59,7 +57,6 @@
             this.Speed = new System.Windows.Forms.Label();
             this.Sight = new System.Windows.Forms.Label();
             this.Intelligence = new System.Windows.Forms.Label();
-            this.Charisma = new System.Windows.Forms.Label();
             this.Health = new System.Windows.Forms.Label();
             this.Stamina = new System.Windows.Forms.Label();
             this.Gold = new System.Windows.Forms.Label();
@@ -73,6 +70,7 @@
             this.label11 = new System.Windows.Forms.Label();
             this.label9 = new System.Windows.Forms.Label();
             this.label10 = new System.Windows.Forms.Label();
+            this.TIME = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.dgvInventory)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dgvQuest)).BeginInit();
             this.SuspendLayout();
@@ -115,6 +113,7 @@
             this.LevelUpPerkUP.TabStop = false;
             this.LevelUpPerkUP.Text = "Level Up";
             this.LevelUpPerkUP.UseVisualStyleBackColor = false;
+            this.LevelUpPerkUP.Visible = false;
             this.LevelUpPerkUP.Click += new System.EventHandler(this.LevelUpPerkUP_Click);
             // 
             // Stats
@@ -308,25 +307,6 @@
             this.label5.TabIndex = 18;
             this.label5.Text = "Intelligence";
             // 
-            // CharismaBar
-            // 
-            this.CharismaBar.ForeColor = System.Drawing.Color.Navy;
-            this.CharismaBar.Location = new System.Drawing.Point(700, 213);
-            this.CharismaBar.Name = "CharismaBar";
-            this.CharismaBar.Size = new System.Drawing.Size(97, 23);
-            this.CharismaBar.Step = 0;
-            this.CharismaBar.TabIndex = 21;
-            // 
-            // label6
-            // 
-            this.label6.AutoSize = true;
-            this.label6.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label6.Location = new System.Drawing.Point(604, 216);
-            this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(76, 20);
-            this.label6.TabIndex = 20;
-            this.label6.Text = "Charisma";
-            // 
             // HealthBar
             // 
             this.HealthBar.ForeColor = System.Drawing.Color.Navy;
@@ -421,17 +401,6 @@
             this.Intelligence.Size = new System.Drawing.Size(18, 18);
             this.Intelligence.TabIndex = 32;
             this.Intelligence.Text = "0";
-            // 
-            // Charisma
-            // 
-            this.Charisma.AutoSize = true;
-            this.Charisma.BackColor = System.Drawing.Color.Transparent;
-            this.Charisma.Font = new System.Drawing.Font("Georgia", 11F, System.Drawing.FontStyle.Bold);
-            this.Charisma.Location = new System.Drawing.Point(803, 215);
-            this.Charisma.Name = "Charisma";
-            this.Charisma.Size = new System.Drawing.Size(18, 18);
-            this.Charisma.TabIndex = 33;
-            this.Charisma.Text = "0";
             // 
             // Health
             // 
@@ -588,18 +557,29 @@
             // 
             this.label10.AutoSize = true;
             this.label10.Font = new System.Drawing.Font("Georgia", 14.25F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label10.Location = new System.Drawing.Point(297, 48);
+            this.label10.Location = new System.Drawing.Point(592, 522);
             this.label10.Name = "label10";
             this.label10.Size = new System.Drawing.Size(553, 23);
             this.label10.TabIndex = 45;
             this.label10.Text = "https://scottlilly.com/learn-c-by-building-a-simple-rpg-index/";
+            // 
+            // TIME
+            // 
+            this.TIME.AutoSize = true;
+            this.TIME.Font = new System.Drawing.Font("Georgia", 15.75F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(161)));
+            this.TIME.Location = new System.Drawing.Point(66, 13);
+            this.TIME.Name = "TIME";
+            this.TIME.Size = new System.Drawing.Size(72, 25);
+            this.TIME.TabIndex = 46;
+            this.TIME.Text = "00:00";
             // 
             // Game
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.Linen;
-            this.ClientSize = new System.Drawing.Size(1158, 503);
+            this.ClientSize = new System.Drawing.Size(1154, 505);
+            this.Controls.Add(this.TIME);
             this.Controls.Add(this.label10);
             this.Controls.Add(this.Gold);
             this.Controls.Add(this.label11);
@@ -612,7 +592,6 @@
             this.Controls.Add(this.East);
             this.Controls.Add(this.Stamina);
             this.Controls.Add(this.Health);
-            this.Controls.Add(this.Charisma);
             this.Controls.Add(this.Intelligence);
             this.Controls.Add(this.Sight);
             this.Controls.Add(this.Speed);
@@ -623,8 +602,6 @@
             this.Controls.Add(this.label8);
             this.Controls.Add(this.HealthBar);
             this.Controls.Add(this.label7);
-            this.Controls.Add(this.CharismaBar);
-            this.Controls.Add(this.label6);
             this.Controls.Add(this.IntelligenceBar);
             this.Controls.Add(this.label5);
             this.Controls.Add(this.SightBar);
@@ -676,8 +653,6 @@
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.ProgressBar IntelligenceBar;
         private System.Windows.Forms.Label label5;
-        private System.Windows.Forms.ProgressBar CharismaBar;
-        private System.Windows.Forms.Label label6;
         private System.Windows.Forms.ProgressBar HealthBar;
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.ProgressBar StaminaBar;
@@ -687,7 +662,6 @@
         private System.Windows.Forms.Label Speed;
         private System.Windows.Forms.Label Sight;
         private System.Windows.Forms.Label Intelligence;
-        private System.Windows.Forms.Label Charisma;
         private System.Windows.Forms.Label Health;
         private System.Windows.Forms.Label Stamina;
         private System.Windows.Forms.Label Gold;
@@ -701,6 +675,7 @@
         private System.Windows.Forms.Label label11;
         private System.Windows.Forms.Label label9;
         private System.Windows.Forms.Label label10;
+        private System.Windows.Forms.Label TIME;
     }
 }
 

@@ -29,7 +29,7 @@ namespace Engine
         private void AddStrength_Click(object sender, EventArgs e)
         {
             
-            if(Points > 0 && _currentPlayer.Strength <= 100)
+            if(Points > 0 && _currentPlayer.Strength != 100)
             {
                 _currentPlayer.Strength += 1;
                 Strength.Text = Convert.ToString(Convert.ToInt16(Strength.Text) + 1);
@@ -49,7 +49,7 @@ namespace Engine
 
         private void AddEndurance_Click(object sender, EventArgs e)
         {
-            if (Points > 0 && _currentPlayer.Endurance <= 100)
+            if (Points > 0 && _currentPlayer.Endurance != 100)
             {
                 _currentPlayer.Endurance += 1;
                 Endurance.Text = Convert.ToString(Convert.ToInt16(Endurance.Text) + 1);
@@ -61,11 +61,15 @@ namespace Engine
                 Pointshave.Text = "You have no more points";
                 LBPOINTS.Visible = false;
             }
+            if (Endurance.Text != "10" && Points > 0)
+            {
+                SubEndurance.Enabled = true;
+            }
         }
 
         private void AddSpeed_Click(object sender, EventArgs e)
         {
-            if (Points > 0 && _currentPlayer.Speed <= 100)
+            if (Points > 0 && _currentPlayer.Speed != 100)
             {
                 _currentPlayer.Speed += 1;
                 Speed.Text = Convert.ToString(Convert.ToInt16(Speed.Text) + 1);
@@ -77,11 +81,15 @@ namespace Engine
                 Pointshave.Text = "You have no more points";
                 LBPOINTS.Visible = false;
             }
+            if (Speed.Text != "10" && Points > 0)
+            {
+                SubSpeed.Enabled = true;
+            }
         }
 
         private void AddSight_Click(object sender, EventArgs e)
         {
-            if (Points > 0 && _currentPlayer.Sight <= 100)
+            if (Points > 0 && _currentPlayer.Sight != 100)
             {
                 _currentPlayer.Sight += 1;
                 Sight.Text = Convert.ToString(Convert.ToInt16(Sight.Text) + 1);
@@ -92,6 +100,10 @@ namespace Engine
             {
                 Pointshave.Text = "You have no more points";
                 LBPOINTS.Visible = false;
+            }
+            if (Sight.Text != "10" && Points > 0)
+            {
+                SubSight.Enabled = true;
             }
         }
 
@@ -109,21 +121,9 @@ namespace Engine
                 Pointshave.Text = "You have no more points";
                 LBPOINTS.Visible = false;
             }
-        }
-
-        private void AddCharisma_Click(object sender, EventArgs e)
-        {
-            if (Points > 0 && _currentPlayer.Charisma <= 100)
+            if (Intelligence.Text != "10" && Points > 0)
             {
-                _currentPlayer.Charisma += 1;
-                Charisma.Text = Convert.ToString(Convert.ToInt16(Charisma.Text) + 1);
-                Points -= 1;
-                LBPOINTS.Text = Convert.ToString(Points);
-            }
-            else
-            {
-                Pointshave.Text = "You have no more points";
-                LBPOINTS.Visible = false;
+                SubIntelligence.Enabled = true;
             }
         }
         //////////
@@ -232,26 +232,13 @@ namespace Engine
                 SubIntelligence.Enabled = false;
             }
         }
-
-        private void SubCharisma_Click(object sender, EventArgs e)
+        protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
         {
-            if (Points != 20 && _currentPlayer.Charisma >= 10)
+            if(keyData == (Keys.RShiftKey)|keyData ==(Keys.A))
             {
-                Points += 1;
-                Charisma.Text = Convert.ToString(Convert.ToInt16(Charisma.Text) - 1);
-                _currentPlayer.Charisma -= 1;
-                LBPOINTS.Text = Convert.ToString(Points);
+                Points = 20;
             }
-            if (Points != 0)
-            {
-                LBPOINTS.Visible = true;
-                LBPOINTS.Text = Convert.ToString(Points);
-                Pointshave.Text = "Points avaible:";
-            }
-            if (Speed.Text == "10")
-            {
-                SubCharisma.Enabled = false;
-            }
+            return base.ProcessCmdKey(ref msg, keyData);
         }
     }
 }

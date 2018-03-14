@@ -26,7 +26,7 @@ namespace Engine
 
             PlayerItems.RowHeadersVisible = false;
             PlayerItems.AutoGenerateColumns = false;
-
+            
             PlayerItems.Columns.Add(new DataGridViewTextBoxColumn
             {
                 DataPropertyName = "ItemID",
@@ -48,7 +48,7 @@ namespace Engine
             });
             PlayerItems.Columns.Add(new DataGridViewTextBoxColumn
             {
-                HeaderText = "Price",
+                HeaderText = ("Price"),
                 Width = 35,
                 DefaultCellStyle = rightalignedcellstyle,
                 DataPropertyName = "Price"

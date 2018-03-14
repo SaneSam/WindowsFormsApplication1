@@ -8,12 +8,18 @@ using System.Threading.Tasks;
 
 namespace Engine
 {
-    public class Player : LivingCreature 
+    public class Player : LivingCreature
     {
         private int _gold;
         private int _EXP;
         private int _strength;
+        private int _endurance;
+        private int _speed;
+        private int _sight;
+        private int _intelligence;
+        private int _level;
         private Location _currentlocation;
+        private Monster _currentMonster;
         public event EventHandler<MessageEventArgs> OnMessage;
         //\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//
         public int Gold
@@ -28,7 +34,7 @@ namespace Engine
         public int EXP
         {
             get { return _EXP; }
-         private set
+            private set
             {
                 _EXP = value;
                 OnPropertyChanged("EXP");
@@ -37,7 +43,12 @@ namespace Engine
         }
         public int level
         {
-            get { return ((EXP / 100) + 1); }
+            get { return _level; }
+            set
+            {
+                _level = value;
+                OnPropertyChanged("Levelup");
+            }
         }
         public int Strength
         {
@@ -48,27 +59,70 @@ namespace Engine
                 OnPropertyChanged("Stats");
             }
         }
-        public int Endurance { get; set; }
-        public int Speed { get; set; }
-        public int Sight { get; set; }
-        public int Intelligence { get; set; }
-        public int Charisma {get;set;}
+        public int Endurance
+        {
+            get { return _endurance; }
+            set
+            {
+                _endurance = value;
+                OnPropertyChanged("Stats");
+            }
+        }
+        public int Speed
+        {
+            get { return _speed; }
+            set
+            {
+                _speed = value;
+                OnPropertyChanged("Stats");
+            }
+        }
+        public int Sight
+        {
+            get { return _sight; }
+            set
+            {
+                _sight = value;
+                OnPropertyChanged("Stats");
+            }
+        }
+        public int Intelligence
+        {
+            get { return _intelligence; }
+            set
+            {
+                _intelligence = value;
+                OnPropertyChanged("Stats");
+            }
+        }
+        public int AC { get; set; }
+        public int playerlvlup = 100;
+        public int levels = 1;
         //\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//
         public Weapon CurrentWeapon { get; set; }
-        private Monster CurrentMonster { get; set; }
+        public Monster CurrentMonster
+        {
+            get { return _currentMonster; }
+            set
+            {
+                _currentMonster = value;
+                OnPropertyChanged("CurrentMonster");
+            }
+        }
         public BindingList<Inventory> Inventory { get; set; }
-        public BindingList<PlayerQuest> Quest { get; set; }  
+        public BindingList<PlayerQuest> Quest { get; set; }
         public Location CurrentLocation
         {
-            get {return _currentlocation; }
+            get { return _currentlocation; }
             set
             {
                 _currentlocation = value;
                 OnPropertyChanged("CurrentLocation");
             }
         }
+
         //\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//
-        private Player (int hp, int maxhp, int stamina, int gold, int exp, int strength, int endurance, int speed, int sight, int intelligence, int charisma, int ArmorClass) : base (hp, maxhp,stamina)
+        private Player(int hp, int maxhp, int stamina, int gold, int exp, int strength, int endurance, int speed, int sight, int intelligence, int ArmorClass) : base(hp, maxhp, stamina)
         {
             Stamina = stamina;
             Gold = gold;
@@ -78,7 +132,7 @@ namespace Engine
             Speed = speed;
             Sight = sight;
             Intelligence = intelligence;
-            Charisma = charisma;
+            AC = ArmorClass;
             Inventory = new BindingList<Inventory>();
             Quest = new BindingList<PlayerQuest>();
         }
@@ -94,11 +148,11 @@ namespace Engine
         //\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//
         private void raiseInventoryChangedEvent(_items item)
         {
-            if(item is Weapon)
+            if (item is Weapon)
             {
-                OnPropertyChanged("Weapons");
+                OnPropertyChanged("Weapon");
             }
-            if(item is Healing)
+            if (item is Healing)
             {
                 OnPropertyChanged("Potion");
             }
@@ -106,10 +160,10 @@ namespace Engine
         public void RemoveItemFromInventory(_items itemToRemove, int quantity = 1)
         {
             Inventory item = Inventory.SingleOrDefault(ii => ii.Details.ID == itemToRemove.ID);
-            if(item != null)
+            if (item != null)
             {
                 item.Quantity -= quantity;
-                if(item.Quantity == 0)
+                if (item.Quantity == 0)
                 {
                     Inventory.Remove(item);
                 }
@@ -119,13 +173,13 @@ namespace Engine
         public void additemtoinventor(_items itemtoadd, int quantity = 1)
         {
             Inventory item = Inventory.SingleOrDefault(ii => ii.Details.ID == itemtoadd.ID);
-            if(item == null)
+            if (item == null)
             {
                 Inventory.Add(new Inventory(itemtoadd, quantity));
             }
             else
             {
-                item.Quantity+= quantity;
+                item.Quantity += quantity;
             }
             raiseInventoryChangedEvent(itemtoadd);
         }
@@ -135,57 +189,155 @@ namespace Engine
             RaiseMessage("You drink a " + potion.Name);
 
             HealPlayer(potion.AmountToHeal);
-
+            if (potion.Something == true)
+            {
+                CheckPotion(potion);
+            }
             RemoveItemFromInventory(potion);
-            if(CurrentLocation.HasAmonster)
+            if (CurrentMonster != null)
             {
                 LetTheMonsterAttack();
+            }
+
+        }
+        public void CheckPotion (Healing potion)
+        {
+            if(potion.ID == 8)
+            {
+                RaiseMessage("You feel woozy from drinking this.");
+                List<int> listNumbers = new List<int>();
+                int number = 0;
+                int shuffle = -50 + (Strength + Endurance + Speed + Intelligence + Sight);
+                for (int i = 5; i != 0; i--)
+                {
+                    do
+                    {
+                        number = RandomNumberGen.NumberBetween(1, 5);
+                    } while (listNumbers.Contains(number));
+                    listNumbers.Add(number);
+                    if (shuffle <= 0)
+                    {
+                        shuffle = 0;
+                    }
+                    int random = RandomNumberGen.NumberBetween(0, shuffle);
+                    if (random >= 100)
+                    {
+                        random = 100;
+                    }
+                    else if (random <= 0)
+                    {
+                        random = 1;
+                    }
+                    if (number == 5)
+                    {
+                        Strength = random + 10;
+                    }
+                    else if (number == 4)
+                    {
+                        Endurance = random + 10;
+                    }
+                    else if (number == 3)
+                    {
+                        Speed = random + 10;
+                    }
+                    else if (number == 2)
+                    {
+                        Sight = random + 10;
+                    }
+                    else if (number == 1)
+                    {
+                        Intelligence = random + 10;
+                    }
+                    shuffle = shuffle - random;
+                }
+            }
+            //
+            if(potion.ID == 9)
+            {
+                RaiseMessage("This should protect way better than those rags.");
+                AC = 10;
             }
             
         }
         public void UseWeapon(Weapon weapon)
         {
+            
             RaiseMessage(CurrentMonster.Name);
             int damageToMonster = RandomNumberGen.NumberBetween(weapon.MinDmg, weapon.MaxDmg);
-            int dice = RandomNumberGen.NumberBetween(1, 20) + (int)(Sight/10);
-            if(dice == 20)
+            int dice = RandomNumberGen.NumberBetween(1, 20);
+            int dice2 = dice + (int)(Sight / 10);
+            if (dice == 20)
             {
-                CurrentMonster.HP -= damageToMonster*2;
-                RaiseMessage("You hit the " + CurrentMonster.Name + " for " + (damageToMonster*2) + ".");
+                CurrentMonster.HP -= damageToMonster * 2;
+                RaiseMessage("Critial Hit!");
+                RaiseMessage("You hit the " + CurrentMonster.Name + " for " + (damageToMonster * 2) + ".");
             }
-            else if(dice >= CurrentMonster.Ac)
+            else if (dice2 >= CurrentMonster.Ac && dice != 0)
             {
-                CurrentMonster.HP -= damageToMonster + (int)(Strength/5);
-                RaiseMessage("You hit the " + CurrentMonster.Name + " for " + damageToMonster + ".");
+                if(weapon.DmgType == CurrentMonster.Weakness)
+                {
+                    if(weapon.DmgType == "strike")
+                    {
+                        CurrentMonster.HP -= (damageToMonster + (int)(Strength / 2));
+                        RaiseMessage("You hit the " + CurrentMonster.Name + " for " + (damageToMonster + (int)(Strength / 5)) + ".");
+                    }
+                    else if(weapon.DmgType == "magic")
+                    {
+                        CurrentMonster.HP -= (damageToMonster + (int)(Intelligence / 4));
+                        RaiseMessage("You hit the " + CurrentMonster.Name + " for " + (damageToMonster + (int)(Intelligence / 4)) + ".");
+                    }
+                    else if(weapon.DmgType == "pericing")
+                    {
+                        CurrentMonster.HP -= (damageToMonster + (int)(Speed / 4));
+                        RaiseMessage("You hit the " + CurrentMonster.Name + " for " + (damageToMonster + (int)(Speed / 4)) + ".");
+                    }
+                    else if(weapon.DmgType == "blunt")
+                    {
+                        CurrentMonster.HP -= (damageToMonster + (int)(Endurance / 4));
+                        RaiseMessage("You hit the " + CurrentMonster.Name + " for " + (damageToMonster + (int)(Endurance / 4)) + ".");
+                    }
+                }
+                else if(weapon.DmgType == "crit")
+                {
+                    CurrentMonster.HP -= (int)(damageToMonster*1.5);
+                    RaiseMessage("You hit the " + CurrentMonster.Name + " for " + (int)(damageToMonster*1.5) + ".");
+                }
+                else
+                {
+                    CurrentMonster.HP -= (damageToMonster );
+                    RaiseMessage("You hit the " + CurrentMonster.Name + " for " + damageToMonster + ".");
+                }
+                
             }
             else
             {
                 RaiseMessage("You missed the " + CurrentMonster.Name);
             }
-            if(CurrentMonster.IsDead)
+            if (CurrentMonster.IsDead)
             {
                 LootTheCurrentMonster();
                 MoveTo(CurrentLocation);
+                
             }
             else
             {
                 LetTheMonsterAttack();
             }
-            
+
         }
         //\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//
-        private void RaiseMessage (string message, bool addExtraNewLine = false)
+        private void RaiseMessage(string message, bool addExtraNewLine = false)
         {
-            if(OnMessage != null)
+            if (OnMessage != null)
             {
                 OnMessage(this, new MessageEventArgs(message, addExtraNewLine));
             }
-            
+
         }
         //\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//
         public void MoveTo(Location location)
         {
-            if(Stamina<=0)
+            if (Stamina <= 0)
             {
                 Stamina = 0;
             }
@@ -195,38 +347,31 @@ namespace Engine
                 return;
             }
             CurrentLocation = location;
-            if(location.hasAQuest)
+            if (location.hasAQuest)
             {
                 int quest = 1;
                 if (PlayerDoesNotHaveThisQuest(location.QuestAvailableHere))
                 {
                     GiveQuestToPlayer(World.QuestByID(quest));
-                }  
+                }
                 else
                 {
-                    if(PlayerHasNotCompleted(World.QuestByID(quest)) && PlayerHasAllQuestCompletionItemFor(World.QuestByID(quest)))
+                    if (PlayerHasNotCompleted(World.QuestByID(quest)) && PlayerHasAllQuestCompletionItemFor(World.QuestByID(quest)))
                     {
                         GivePlayerQuestRewards(World.QuestByID(quest));
                         quest++;
-                        if(World.QuestByID(quest) != null)
+                        if (World.QuestByID(quest) != null)
                         {
-                        GiveQuestToPlayer(World.QuestByID(quest));
+                            GiveQuestToPlayer(World.QuestByID(quest));
                         }
                     }
                 }
             }
-
-                SetTheCurrentMonsterForTheCurrentLocation(location);
-
-            
+            SetTheCurrentMonsterForTheCurrentLocation(location);
         }
         public void moveNorth()
         {
-            if(CurrentLocation.HasAmonster)
-            {
-                LetTheMonsterAttack();
-            }
-            if (Stamina <= 0)
+            if (Stamina <= 0 || HP <= 0)
             {
                 Stamina = 0;
                 RaiseMessage("Take a rest you are tired of walking");
@@ -238,11 +383,7 @@ namespace Engine
         }
         public void moveEast()
         {
-            if (CurrentLocation.HasAmonster)
-            {
-                LetTheMonsterAttack();
-            }
-            if (Stamina <= 0)
+            if (Stamina <= 0 || HP <= 0)
             {
                 Stamina = 0;
                 RaiseMessage("Take a rest you are tired of walking");
@@ -254,11 +395,7 @@ namespace Engine
         }
         public void moveSouth()
         {
-            if (CurrentLocation.HasAmonster)
-            {
-                LetTheMonsterAttack();
-            }
-            if (Stamina <= 0)
+            if (Stamina <= 0 || HP <= 0)
             {
                 Stamina = 0;
                 RaiseMessage("Take a rest you are tired of walking");
@@ -266,15 +403,11 @@ namespace Engine
             else if (CurrentLocation.LocationToSouth != null)
             {
                 MoveTo(CurrentLocation.LocationToSouth);
-            }         
+            }
         }
         public void moveWest()
         {
-            if (CurrentLocation.HasAmonster)
-            {
-                LetTheMonsterAttack();
-            }
-            if (Stamina <= 0)
+            if (Stamina <= 0 || HP <= 0)
             {
                 Stamina = 0;
                 RaiseMessage("Take a rest you are tired of walking");
@@ -282,25 +415,29 @@ namespace Engine
             else if (CurrentLocation.LocationToWest != null)
             {
                 MoveTo(CurrentLocation.LocationToWest);
-            }      
+            }
         }
         public void Rest()
         {
             if (World.LocationByID(World.Location_ID_Camp) == CurrentLocation)
             {
                 HP = MaxHP;
-                Stamina = 100;
+                if(Stamina <= 100+((int)Speed/4))
+                {
+                    Stamina = 100 + ((int)Speed / 5);
+                }
+
             }
             else
             {
-                if (MaxHP <= (HP+(int)(MaxHP * .15)))
+                if (MaxHP <= (HP + (int)(MaxHP * .12)))
                 {
                     HP = MaxHP;
                 }
                 else
                 {
-                    
-                    HP = HP+(int)(MaxHP * .15);
+
+                    HP = HP + (int)(MaxHP * .12);
                 }
                 if ((Stamina + 40) >= 100)
                 {
@@ -308,15 +445,15 @@ namespace Engine
                 }
                 else
                 {
-                    Stamina =+ 40;
+                    Stamina += 40;
                 }
             }
-            
-            
-            RaiseMessage("You taken a rest and regain health and replenshed stamina");
-            if(CurrentMonster != null)
+
+
+            RaiseMessage("You had a rest and regain health and replenshed stamina");
+            if (CurrentMonster != null)
             {
-                if(CurrentMonster.HP >= 0)
+                if (CurrentMonster.HP >= 0)
                 {
                     double crit = CurrentMonster.MaxDmg * 1.5;
                     int damageToPlayer = RandomNumberGen.NumberBetween(10, (int)crit);
@@ -331,7 +468,7 @@ namespace Engine
                 }
             }
         }
-        private void MoveHome()
+        public void MoveHome()
         {
             MoveTo(World.LocationByID(World.Location_ID_Camp));
             HP = MaxHP;
@@ -341,14 +478,14 @@ namespace Engine
         private void LootTheCurrentMonster()
         {
             RaiseMessage("");
-            RaiseMessage("You defeated the " + CurrentMonster.Name);
-            RaiseMessage("You receive " + CurrentMonster.RewardEXP + " exp.");
+            RaiseMessage("The " + CurrentMonster.Name + " falls to your strength.");
+            RaiseMessage("You gain " + CurrentMonster.RewardEXP + " exp.");
             RaiseMessage("You receive " + CurrentMonster.Gold + " gold.");
 
             AddEXP(CurrentMonster.RewardEXP);
             Gold += CurrentMonster.Gold;
 
-            foreach(Inventory inventory in CurrentMonster.lootItems)
+            foreach (Inventory inventory in CurrentMonster.lootItems)
             {
                 additemtoinventor(inventory.Details);
 
@@ -362,17 +499,17 @@ namespace Engine
         }
         private void LetTheMonsterAttack()
         {
-            int monsterhit = RandomNumberGen.NumberBetween(0, CurrentMonster.Sight+level);
-            if(monsterhit>=(int)(Speed/2))
-            { 
-                int damagetoPlayer = RandomNumberGen.NumberBetween(2, CurrentMonster.MaxDmg);
+            int monsterhit = RandomNumberGen.NumberBetween(0, CurrentMonster.Sight + level);
+            if (monsterhit >= (int)(Speed / 5))
+            {
+                int damagetoPlayer = (RandomNumberGen.NumberBetween((int)(CurrentMonster.MaxDmg/4), CurrentMonster.MaxDmg)-AC);
                 RaiseMessage("The " + CurrentMonster.Name + " did " + damagetoPlayer + " of damage.");
                 HP -= damagetoPlayer;
-                if(IsDead)
+                if (IsDead)
                 {
-                RaiseMessage("You have fainted from the " + CurrentMonster.Name + " attack.");
-                MoveHome();
-                Gold = Gold - (int)(0.05*Gold);
+                    RaiseMessage("You have fainted from the " + CurrentMonster.Name + " attack.");
+                    MoveHome();
+                    Gold = Gold - (int)(0.05 * Gold);
                 }
             }
             else
@@ -382,74 +519,115 @@ namespace Engine
         }
         private void AddEXP(int exp)
         {
-            int playerlvlup = 100;
-            EXP += exp;
-            if(EXP >=playerlvlup)
+            double multiplyer = 1;
+            if (Intelligence >= 50)
             {
-                RaiseMessage("Level Up!");
+                multiplyer = 1.5;
             }
+            else if (Intelligence == 100)
+            {
+                multiplyer = 2;
+            }
+
+            EXP += (int)(exp * multiplyer);
             if (EXP >= playerlvlup)
             {
-                if(level == 1)
+                if (EXP >= playerlvlup)
                 {
-                    playerlvlup = 300;
+                    RaiseMessage("Level Up!");
                 }
-                else if(level == 2)
+                if (levels == 1 && playerlvlup <= EXP)
                 {
+                    EXP -= playerlvlup;
+                    levels = 2;
+                    playerlvlup = 300;
+
+                }
+                else if (levels == 2 && playerlvlup <= EXP)
+                {
+                    EXP -= playerlvlup;
+                    levels = 3;
+                    playerlvlup = 600;
+                }
+                else if (levels == 3 && playerlvlup <= EXP)
+                {
+                    EXP -= playerlvlup;
+                    levels = 4;
                     playerlvlup = 900;
                 }
-                else if (level == 3)
+                else if (levels == 4 && playerlvlup <= EXP)
                 {
+                    EXP -= playerlvlup;
+                    levels = 5;
+                    playerlvlup = 1200;
+                }
+                else if (levels == 5 && playerlvlup <= EXP)
+                {
+                    EXP -= playerlvlup;
+                    levels = 6;
+                    playerlvlup = 1500;
+                }
+                else if (levels == 6 && playerlvlup <= EXP)
+                {
+                    EXP -= playerlvlup;
+                    levels = 7;
                     playerlvlup = 1800;
                 }
-                else if (level == 4)
+                else if (levels == 7 && playerlvlup <= EXP)
                 {
+                    EXP -= playerlvlup;
+                    levels = 8;
+                    playerlvlup = 2100;
+                }
+                else if (levels == 8 && playerlvlup <= EXP)
+                {
+                    EXP -= playerlvlup;
+                    levels = 9;
+                    playerlvlup = 2400;
+                }
+                else if (levels == 9 && playerlvlup <= EXP)
+                {
+                    EXP -= playerlvlup;
+                    levels = 10;
+                    playerlvlup = 2700;
+                }
+                else if (levels == 10 && playerlvlup <= EXP)
+                {
+                    EXP -= playerlvlup;
+                    levels = 11;
+                    playerlvlup = 3000;
+                }
+                else if (levels == 11 && playerlvlup <= EXP)
+                {
+                    EXP -= playerlvlup;
+                    levels = 12;
+                    playerlvlup = 3300;
+                }
+                else if (levels == 12 && playerlvlup <= EXP)
+                {
+                    EXP -= playerlvlup;
+                    levels = 13;
                     playerlvlup = 3600;
                 }
-                else if (level == 5)
+                else if (levels == 13 && playerlvlup <= EXP)
                 {
-
+                    EXP -= playerlvlup;
+                    levels = 14;
+                    playerlvlup = 3900;
                 }
-                else if (level == 6)
+                else if (levels == 14 && playerlvlup <= EXP)
                 {
-
+                    EXP -= playerlvlup;
+                    levels = 15;
+                    playerlvlup = 4200;
                 }
-                else if (level == 7)
+                else if (levels == 15 && playerlvlup <= EXP)
                 {
-
+                    EXP -= playerlvlup;
+                    levels = 16;
+                    playerlvlup = 4500;
                 }
-                else if (level == 8)
-                {
-
-                }
-                else if (level == 9)
-                {
-
-                }
-                else if (level == 10)
-                {
-
-                }
-                else if (level == 11)
-                {
-
-                }
-                else if (level == 12)
-                {
-
-                }
-                else if (level == 13)
-                {
-
-                }
-                else if (level == 14)
-                {
-
-                }
-                else if (level == 15)
-                {
-
-                }
+                
             }
             
         }
@@ -474,20 +652,47 @@ namespace Engine
         //\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//
         public static Player CreateDefaultPlayer()
         {
-            Player player = new Player(100, 100, 100, 5, 0, 10, 10, 10, 10, 10, 10, 5);
-            player.Inventory.Add(new Inventory(World.ItemByID(World.Item_ID_GODSWORD), 1));//GET RID OF
-            player.Inventory.Add(new Inventory(World.ItemByID(World.Item_ID_Sword), 1));
-            player.Inventory.Add(new Inventory(World.ItemByID(World.Item_ID_hedgeapple), 1)); // GET RID OF
+            Player player = new Player(100, 100, 100, 10, 0, 10, 10, 10, 10, 10, 5);
+            player.Inventory.Add(new Inventory(World.ItemByID(World.Item_ID_Bow), 1));
+            player.Inventory.Add(new Inventory(World.ItemByID(World.Item_ID_GODSWORD), 1));
             player.CurrentLocation = World.LocationByID(World.Location_ID_Camp);
             return player;
+            /*if(clas == "I")
+            {
+                Player playerI = new Player(120,120,100,20,0,13,10,12,11,10,7);
+                player.Inventory.Add(new Inventory(World.ItemByID(World.Item_ID_Dagger), 1));
+                player.CurrentLocation = World.LocationByID(World.Location_ID_Camp);
+                return playerI;
+
+            }
+            else if(clas == "M")
+            {
+                Player playerM = new Player(100, 100, 140, 5, 0, 10, 10, 13, 12, 16, 4);
+                player.Inventory.Add(new Inventory(World.ItemByID(World.Item_ID_Staff), 1));
+                player.Inventory.Add(new Inventory(World.ItemByID(World.Item_ID_Dagger), 1));
+                player.CurrentLocation = World.LocationByID(World.Location_ID_Camp);
+                return playerM;
+            }
+            else if(clas == "C")
+            {
+                Player playerC = new Player(110, 110, 110, 10, 0, 10, 10, 14, 13, 11, 6);
+                player.Inventory.Add(new Inventory(World.ItemByID(World.Item_ID_Bow), 1));
+                player.Inventory.Add(new Inventory(World.ItemByID(World.Item_ID_Dagger), 1));
+                player.CurrentLocation = World.LocationByID(World.Location_ID_Camp);
+                return playerC;
+            }*/
+            
+                
+            
+            
         }
-        public static Player CreatePlayerfromDatabase (int hp, int maxhp, int gold, int exp, int currentlocation)
+        public static Player CreatePlayerfromDatabase(int hp, int maxhp, int gold, int exp, int currentlocation)
         {
-            Player player = new Player(hp, maxhp,100, gold, exp,10,10,10,10,10,10,5);
+            Player player = new Player(hp, (maxhp+10), 100, gold, exp, 10, 10, 10, 10, 10, 5);
             player.MoveTo(World.LocationByID(currentlocation));
             return player;
         }
-        public static Player createplayerformxmlString (string xmlPlayerData)
+        public static Player createplayerformxmlString(string xmlPlayerData)
         {
             try
             {
@@ -500,16 +705,16 @@ namespace Engine
                 int gold = Convert.ToInt32(playerdata.SelectSingleNode("/Player/Stats/Gold").InnerText);
                 int exp = Convert.ToInt32(playerdata.SelectSingleNode("/Player/Stats/EXP").InnerText);
 
-                Player player = new Player(HP, MaxHP,100, gold, exp,10,10,10,10,10,10,5);
+                Player player = new Player(HP, MaxHP, 100, gold, exp, 10, 10, 10, 10, 10, 5);
 
                 int currentLocationID = Convert.ToInt32(playerdata.SelectSingleNode("/Player/Stats/CurrentLocation").InnerText);
                 player.CurrentLocation = World.LocationByID(currentLocationID);
-                if(playerdata.SelectSingleNode(".Player/Stats/CurrentWeapon") != null)
+                if (playerdata.SelectSingleNode(".Player/Stats/CurrentWeapon") != null)
                 {
                     int currentWeaponID = Convert.ToInt32(playerdata.SelectSingleNode("/Player/Stats/CurrentWeapon").InnerText);
                     player.CurrentWeapon = (Weapon)World.ItemByID(currentWeaponID);
                 }
-                foreach(XmlNode node in playerdata.SelectNodes("/Player/Inventory/Inventory"))
+                foreach (XmlNode node in playerdata.SelectNodes("/Player/Inventory/Inventory"))
                 {
                     int id = Convert.ToInt32(node.Attributes["ID"].Value);
                     int quantity = Convert.ToInt32(node.Attributes["Quantity"].Value);
@@ -518,7 +723,7 @@ namespace Engine
                         player.additemtoinventor(World.ItemByID(id));
                     }
                 }
-                foreach(XmlNode node in playerdata.SelectNodes("/Player/PlayerQuest/PlayerQuest"))
+                foreach (XmlNode node in playerdata.SelectNodes("/Player/PlayerQuest/PlayerQuest"))
                 {
                     int id = Convert.ToInt32(node.Attributes["ID"].Value);
                     bool iscompleted = Convert.ToBoolean(node.Attributes["IsCompleted"].Value);
@@ -537,7 +742,7 @@ namespace Engine
         //\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//
         public bool HasRequiredItemToEnter(Location location)
         {
-            if(location.Itemrequiredtoenter == null)
+            if (location.Itemrequiredtoenter == null)
             {
                 return true;
             }
@@ -545,9 +750,9 @@ namespace Engine
         }
         public bool hasallquestcompleted(Quest quest)
         {
-            foreach(QuestCompletedItem qci in quest.QuestCompletedItem)
+            foreach (QuestCompletedItem qci in quest.QuestCompletedItem)
             {
-                if(!Inventory.Any(ii=>ii.Details.ID==qci.Details.ID &&ii.Quantity>=qci.Quanity))
+                if (!Inventory.Any(ii => ii.Details.ID == qci.Details.ID && ii.Quantity >= qci.Quanity))
                 {
                     return false;
                 }
@@ -556,7 +761,7 @@ namespace Engine
         }
         private bool HasRequiredItemToEnterThisLcoation(Location location)
         {
-            if(location.NoReqiredItemToEnter)
+            if (location.NoReqiredItemToEnter)
             {
                 return true;
             }
@@ -567,7 +772,7 @@ namespace Engine
         public void MarkQuestAsDone(Quest quest)
         {
             PlayerQuest playerQuest = Quest.SingleOrDefault(pq => pq.Details.ID == quest.ID);
-            if(playerQuest != null)
+            if (playerQuest != null)
             {
                 playerQuest.IsCompleted = true;
             }
@@ -577,7 +782,7 @@ namespace Engine
             RaiseMessage("You receive the " + quest.Name + " quest.");
             RaiseMessage(quest.Description);
             RaiseMessage("To complete it, return with:");
-            foreach(QuestCompletedItem qci in quest.QuestCompletedItem)
+            foreach (QuestCompletedItem qci in quest.QuestCompletedItem)
             {
                 RaiseMessage(string.Format("{0} {1}", qci.Quanity, qci.Quanity == 1 ? qci.Details.Name : qci.Details.NamePlural));
             }
@@ -586,9 +791,9 @@ namespace Engine
         }
         private bool PlayerHasAllQuestCompletionItemFor(Quest quest)
         {
-            foreach(QuestCompletedItem qci in quest.QuestCompletedItem)
+            foreach (QuestCompletedItem qci in quest.QuestCompletedItem)
             {
-                if(!Inventory.Any(ii => ii.Details.ID == qci.Details.ID && ii.Quantity >= qci.Quanity))
+                if (!Inventory.Any(ii => ii.Details.ID == qci.Details.ID && ii.Quantity >= qci.Quanity))
                 {
                     return false;
                 }
@@ -597,10 +802,10 @@ namespace Engine
         }
         private void RemoveQuestCompletuionItems(Quest quest)
         {
-            foreach(QuestCompletedItem qci in quest.QuestCompletedItem)
+            foreach (QuestCompletedItem qci in quest.QuestCompletedItem)
             {
                 Inventory item = Inventory.SingleOrDefault(ii => ii.Details.ID == qci.Details.ID);
-                if(item != null)
+                if (item != null)
                 {
                     RemoveItemFromInventory(item.Details, qci.Quanity);
                 }
@@ -610,21 +815,21 @@ namespace Engine
         private void SetTheCurrentMonsterForTheCurrentLocation(Location location)
         {
             CurrentMonster = location.NewInstanceOfMonsterLivingHere();
-            if(CurrentMonster != null)
+            if (CurrentMonster != null)
             {
                 RaiseMessage("You see a " + CurrentMonster.Name);
             }
         }
         //\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//
-        private bool PlayerDoesNotHaveTheRequiredItemToEnter (Location location)
+        private bool PlayerDoesNotHaveTheRequiredItemToEnter(Location location)
         {
             return !HasRequiredItemToEnter(location);
         }
-        private bool PlayerDoesNotHaveThisQuest (Quest quest)
+        private bool PlayerDoesNotHaveThisQuest(Quest quest)
         {
             return Quest.All(pq => pq.Details.ID != quest.ID);
         }
-        private bool PlayerHasNotCompleted (Quest quest)
+        private bool PlayerHasNotCompleted(Quest quest)
         {
             return Quest.Any(pq => pq.Details.ID == quest.ID && !pq.IsCompleted);
         }
@@ -659,7 +864,7 @@ namespace Engine
             currentLocation.AppendChild(playerData.CreateTextNode(this.CurrentLocation.ID.ToString()));
             stats.AppendChild(currentLocation);
 
-            if(CurrentWeapon != null)
+            if (CurrentWeapon != null)
             {
                 XmlNode currentWeapon = playerData.CreateElement("CurrentWeapon");
                 currentWeapon.AppendChild(playerData.CreateTextNode(this.CurrentWeapon.ID.ToString()));
@@ -668,7 +873,7 @@ namespace Engine
 
             XmlNode inventoryItems = playerData.CreateElement("InventoryItem");
             player.AppendChild(inventoryItems);
-            foreach(Inventory item in this.Inventory)
+            foreach (Inventory item in this.Inventory)
             {
                 XmlNode inventoryItem = playerData.CreateElement("InventoryItem");
 
@@ -685,7 +890,7 @@ namespace Engine
             XmlNode playerQuest = playerData.CreateElement("PlayerQuests");
             player.AppendChild(playerQuest);
 
-            foreach(PlayerQuest quest in this.Quest)
+            foreach (PlayerQuest quest in this.Quest)
             {
                 XmlNode playerquest = playerData.CreateElement("PlayerQuest");
                 XmlAttribute idAttribute = playerData.CreateAttribute("ID");
